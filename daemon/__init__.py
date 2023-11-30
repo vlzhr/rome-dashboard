@@ -38,7 +38,7 @@ def get_rome_price():
 
 
 def get_rome_payouts():
-    txs_short = loads(get("https://api.wavesplatform.com/v0/transactions/invoke-script?sender={}&dapp={}&function=distribute&sort=desc&limit=100".format(distributorAddress, distributorAddress)).text)["data"]
+    txs_short = loads(get("https://api.wavesplatform.com/v0/transactions/invoke-script?sender={}&dapp={}&function=distribute&sort=desc&limit=30".format(distributorAddress, distributorAddress)).text)["data"]
     tx_ids = [tx["data"]["id"] for tx in txs_short]
     txs = loads(post("https://nodes.wavesnodes.com/transactions/info", json={"ids": tx_ids}).text)
 
