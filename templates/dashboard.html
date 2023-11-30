@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ROME Dashboard</title>
+
+    <style>
+        body {margin: 0; font-family: "Inconsolata,monospace", sans-serif; font-size: 12px;}
+        main {max-width: 620px; margin: auto;}
+        main > * {margin: 30px 0;}
+        h3 {margin-top: 40px;}
+        td {width: 140px;}
+        a { color: #000; text-decoration: none; border-bottom: 1px dotted #606870;}
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Rome Dashboard</h1>
+
+        <h3>Key metrics</h3>
+        <desc>ROME is an overcollateralized stablecoin on the Waves blockchain powered by Puzzle Network. You can read more about it in the <a href="https://medium.com/@puzzlenetwork/all-roads-lead-to-rome-72a3c47587b9">article</a>.</desc>
+        <table>
+            <tr><td>Protocol price</td> <td>${{pretty(d["price"]["protocol"], 4)}}</td></tr>
+            <tr><td>Market price (buy / sell)</td><td>
+                ${{pretty(d["price"]["market"]["buy100"], 4)}} / ${{pretty(d["price"]["market"]["sell100"], 4)}}
+            </td></tr>
+            <tr><td>Minted</td> <td>{{pretty(d["supply"]["circ"] / 1000000, 2)}} ROME</td></tr>
+        </table>
+
+        <h3>Distributions</h3>
+        <desc>All ROME holders receive distributions *at least* daily.
+            To be eligible for distribution, simply hold ROME in your Waves wallet.
+            The fastest option to get some ROME is buying it in Puzzle Aggregator:
+            <a href="https://puzzleswap.org/trade?asset1=AP4Cb5xLYGH6ZigHreCZHoXpQTWDkPsG2BHqfDUx6taJ" target="_blank">link</a>.</desc>
+        <table>
+            <tr>
+                <td>Tx</td>
+                <td>Distributed</td>
+                <td>APR / APY</td>
+            </tr>
+            {% for n in d["payouts"] %}
+                <tr>
+                    <td><a href="https://w8.io/{{n['id']}}" target="_blank">{{pretty_time(n["timestamp"])}}</a></td>
+                    <td>{{pretty(n["amount"] / 1000000)}} ROME</td>
+                    <td>{{pretty_apr(n["apr"])}} / {{get_pretty_apy(n["apr"])}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <h3>Minters</h3>
+        <desc>The new ROME tokens are brought to the market by minters. You can act as a minter as well.
+            For this, borrow ROME against any supported collateral at Puzzle Lend:
+            <a href="https://lend.puzzleswap.org/3P8Df2b7ywHtLBHBe8PBVQYd3A5MdEEJAou" target="_blank">link</a>.</desc>
+        <table>
+            <tr>
+                <td>Minter</td>
+                <td>ROME</td>
+                <td>Collateral</td>
+                {% for n in c["collateral"] %}
+                <td><a href="{{n['url']}}" target="_blank">{{n["ticker"]}}</a></td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Total</td>
+                <td>{{pretty(d["minters"]["total"]["minted"] / 1000000)}}</td>
+                <td>${{pretty(d["minters"]["total"]["collateral"], 2)}}</td>
+                {% for k in c["collateral"] %}
+                    <td>{{pretty(d["minters"]["total"]["supplied"].get(k["assetId"], 0), 4)}}</td>
+                {% endfor %}
+            </tr>
+            {% for n in d["minters"]["addresses"] %}
+                <tr>
+                    <td><a href="https://w8.io/{{n['address']}}" target="_blank">{{pretty_address(n["address"])}}</a></td>
+                    <td>{{pretty(n["minted"] / 1000000)}}</td>
+                    <td>${{pretty(n["collateral"], 2)}}</td>
+                    {% for k in c["collateral"] %}
+                        <td>{{pretty(n["supplied"].get(k["assetId"], 0), 4)}}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+
+        <h3>Constants</h3>
+        <table>
+            <tr>
+                <td>Contract</td>
+                <td>Address</td>
+            </tr>
+            {% for n in c["contracts"] %}
+                <tr>
+                    <td>{{n["name"]}}</td>
+                    <td><a href="https://w8.io/{{n['address']}}" target="_blank">{{n["address"]}}</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <div>...</div>
+
+        <div>Last update: {{pretty_time(d["last_update"])}}</div>
+        <div>More info: <a target="tg" href="https://t.me/puzzle_network">Telegram Group</a></div>
+    </main>
+</body>
+</html>
